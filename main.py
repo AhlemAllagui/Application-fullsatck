@@ -3,15 +3,22 @@ from flask_sqlalchemy import SQLAlchemy
 import os
 
 app = Flask(__name__)
+# Clé secrète
 app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY", "dev-secret")
-db_url = os.environ.get("DATABASE_URL")
-if db_url and db_url.startswith("postgres://"):
-    db_url = db_url.replace("postgres://", "postgresql://", 1)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = db_url or "postgresql://postgres:lindybeauty1@localhost:5432/first_app"
+# URL de la base PostgreSQL sur Railway
+DATABASE_URL = os.environ.get("DATABASE_URL", "postgresql://postgres:lindybeauty1@containers-us-west-123.railway.app:5432/first_app")
+
+# Correction pour SQLAlchemy
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
+# Modèle User
 class User(db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
@@ -73,5 +80,6 @@ def delete_user(id):
     return redirect(url_for("home"))
 
 if __name__ == "__main__":
+    # Port Railway
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)

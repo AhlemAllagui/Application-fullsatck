@@ -1,10 +1,13 @@
 from flask import Flask, render_template, request, flash, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
-
+import os
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'XXXXXXXXXXX'
-app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:lindybeauty1@localhost:5432/first_app"
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
+    'DATABASE_URL',
+    "postgresql://postgres:lindybeauty1@localhost:5432/first_app"
+)
 
 db = SQLAlchemy(app)
 
